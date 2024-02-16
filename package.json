@@ -1,0 +1,44 @@
+{
+  "name": "rs-chat-api",
+  "version": "1.0.0",
+  "description": "Api for RSSchool websocket task",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./src/index.js",
+    "lint": "eslint . --ext .js",
+    "lint:fix": "eslint . --ext .js --fix",
+    "test": "jest --clearCache && jest --runInBand --verbose --forceExit ./test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MikAleinik/rs-chat-api.git"
+  },
+  "keywords": [
+    "rsschool",
+    "api",
+    "websocket"
+  ],
+  "author": "MikAleinik",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MikAleinik/rs-chat-api/issues"
+  },
+  "homepage": "https://github.com/MikAleinik/rs-chat-api#readme",
+  "engines": {
+    "node": "16.x"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "dotenv": "^16.3.1",
+    "uuid": "^9.0.0",
+    "ws": "^8.14.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.51.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "jest": "^29.7.0",
+    "prettier": "^3.0.3"
+  }
+}
