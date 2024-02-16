@@ -24,9 +24,6 @@
     "url": "https://github.com/rolling-scopes-school/fun-chat-server/issues"
   },
   "homepage": "https://github.com/rolling-scopes-school/fun-chat-server#readme",
-  "engines": {
-    "node": "16.x"
-  },
   "dependencies": {
     "chalk": "^4.1.2",
     "dotenv": "^16.3.1",
