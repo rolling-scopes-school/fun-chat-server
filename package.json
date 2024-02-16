@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MikAleinik/rs-chat-api.git"
+    "url": "git+https://github.com/rolling-scopes-school/fun-chat-server.git"
   },
   "keywords": [
     "rsschool",
@@ -21,9 +21,9 @@
   "author": "MikAleinik",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/MikAleinik/rs-chat-api/issues"
+    "url": "https://github.com/rolling-scopes-school/fun-chat-server/issues"
   },
-  "homepage": "https://github.com/MikAleinik/rs-chat-api#readme",
+  "homepage": "https://github.com/rolling-scopes-school/fun-chat-server#readme",
   "engines": {
     "node": "16.x"
   },
