@@ -1,0 +1,32 @@
+{
+  "plugins": ["prettier", "import"],
+  "extends": ["airbnb-base", "plugin:prettier/recommended"],
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "script"
+  },
+  "env": {
+    "es6": true,
+    "browser": false,
+    "node": true,
+    "jest": true
+  },
+  "rules": {
+    "no-debugger": "off",
+    "no-console": "off",
+    "class-methods-use-this": "off",
+    "newline-per-chained-call": "error",
+    "lines-between-class-members": [
+      "error",
+      {
+        "enforce": [{ "blankLine": "never", "prev": "method", "next": "method" }]
+      }
+    ],
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ]
+  }
+}
