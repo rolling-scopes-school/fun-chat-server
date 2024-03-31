@@ -79,6 +79,9 @@ module.exports = class MessageFromUserHandler extends DefaultHandler {
   #sendDeliveredNotify(message) {
     const connectionsPool = ConnectionPool.getInstance();
     const userConnection = connectionsPool.getConnectionByLogin(message.from);
+    if (!userConnection) {
+      return false;
+    }
     const userFrom = userConnection.getUser();
     if (userFrom.isLogined) {
       const messageFrom = {
