@@ -1,16 +1,46 @@
 ## Server Application for the Chat. API
 
+### Install and Run the Application
+
 To use the chat server application follow these steps:
 
 - clone the repository
-- install dependencies with `npm i`
+- install the dependencies with `npm i`
+- create the `.env` file and specify the [port settings](#Setting-the-Listening-Port-Parameters) and server [event log settings](#Server-Event-Display-Settings) in it
 - start the local server using `npm run start`
 
 The server runs on port 4000 and listens for messages from client applications.
 
+In the `.env.example` file, you can find an example of basic parameter settings for the `.env` file.
+
+To apply the modified parameters, you will need to restart the server.
+
+### Setting the Listening Port Parameters
+
+In the created `.env` file, set the `SERVER_PORT` parameter to `4000`.
+
+If it is not possible to run the server using port `4000`, you can use another port.
+
+### Server Event Display Settings
+
+The server event log facilitates real-time tracking of incoming requests received by the server and responses sent by the server.
+
+In the created `.env` file, set the `LOG`  parameter to one of the values listed in this section.
+
+<details>
+<summary markdown="span">Server Log Display Options</summary>
+
+- `ALL` - all incoming and outgoing requests
+- `ERROR` - only erroneous requests
+- `INCOMING` - all incoming requests
+- `OUTCOMING` - all outgoing requests
+- `NONE` - request logging disabled
+
+</details>
+
 ### General Information
 
-The server application utilizes the [WebSocket protocol](https://websockets.spec.whatwg.org/) where the initiator of the request can be either a client or server application. To use the protocol you'll need to familiarize yourself with the [MDN documentation](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket).
+The server application utilizes the [WebSocket protocol](https://websockets.spec.whatwg.org/) where the initiator of the request can be either a client or server application. To use the protocol you will need to familiarize yourself with the [MDN documentation](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket).
 
 Upon a request to the server, the client will receive a response containing information about the processing result of the request. Some client requests may trigger the server to send additional requests to other clients - such situations are specified in the request description.
 
@@ -528,7 +558,7 @@ where:
 
 Initiator: Client application
 
-Description: Used to retrieve a list of all messages with a specific user. All messages with the `isDelivered` status set to `false` will update the status to `true` if the request is made by the recipient user. In this case,  for each message, the server will make a request to the sender user according to the ["Notification of Message Delivery Status Change"](#Notification-of-Message-Delivery-Status-Change) section.
+Description: Used to retrieve a list of all messages with a specific user. All messages with the `isDelivered` status set to `false` will update the status to `true` if the request is made by the recipient user. In this case, for each message, the server will make a request to the sender user according to the ["Notification of Message Delivery Status Change"](#Notification-of-Message-Delivery-Status-Change) section.
 
 <details>
 <summary markdown="span">Request to the Server</summary>
@@ -1120,21 +1150,4 @@ Server Responses for Common Errors
 
 - `id` - request identifier received from the client
 - `error` - description of the error
-</details>
-
-### Server Event Log
-
-The server event log allows real-time tracking of incoming requests received by the server and responses sent by the server.
-
-To change display settings, modify the value of the `LOG` field in the `.env` file.
-
-<details>
-<summary markdown="span">Server Log Display Options</summary>
-
-- `ALL` - all incoming and outgoing requests
-- `ERROR` - only erroneous requests
-- `INCOMING` - all incoming requests
-- `OUTCOMING` - all outgoing requests
-- `NONE` -  request logging disabled
-
 </details>

@@ -65,17 +65,18 @@ module.exports = class MessageSendHandler extends DefaultHandler {
     if (userTo.isLogined) {
       const connectionsPool = ConnectionPool.getInstance();
       const userConnection = connectionsPool.getConnectionByLogin(messageModel.to);
-
-      messageModel.isDelivered = true;
-      result.message = messageModel.getPayload();
-      const messageTo = {
-        id: null,
-        type: RequestTypes.MSG_SENDED_FROM_SERVER,
-        payload: {
-          message: result.message,
-        },
-      };
-      userConnection.messageHandler(messageTo);
+      if (userConnection) {
+        messageModel.isDelivered = true;
+        result.message = messageModel.getPayload();
+        const messageTo = {
+          id: null,
+          type: RequestTypes.MSG_SENDED_FROM_SERVER,
+          payload: {
+            message: result.message,
+          },
+        };
+        userConnection.messageHandler(messageTo);
+      }
     }
 
     result.message = messageModel.getPayload();

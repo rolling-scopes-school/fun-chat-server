@@ -18,6 +18,9 @@ module.exports = class Socket {
     // this.#socket.on('connection', this.#newConnectionHandler.bind(this));
 
     const webSocketServerPort = process.env.PORT || process.env.SERVER_PORT;
+    if (!webSocketServerPort) {
+      throw new Error('server port not correct or not available');
+    }
     this.#httpServer = http.createServer();
     this.#httpServer.listen(webSocketServerPort);
     this.#socket = new WebSocket.Server({ server: this.#httpServer });
