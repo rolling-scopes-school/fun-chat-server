@@ -121,7 +121,7 @@ where:
 
 ### User Logout
 
-Initiator: Client application to end the session for an authorized user
+Initiator: Client application
 
 Description: Used to end the session for the current user. Upon successful completion, the server sends a request to all authorized users in accordance with the ["Third-Party User Logout"](#Third-Party-User-Logout) section.
 
