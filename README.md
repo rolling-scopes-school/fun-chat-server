@@ -402,7 +402,7 @@ where:
 
 Initiator: Client application
 
-Description: Used to send a message to another user. If the message recipient is authenticated, the message is immediately directed to them according to the ["Receiving a Message From a User"](#Receiving-a-Message-From-a-User) section. If the recipient is not authenticated, the message will be received along with all messages when requested according to the ["Fetching Message History With the User"](#Fetching-Message-History-With-the-User) section.
+Description: Used to send a message to another user. If the message recipient is authenticated, the message is immediately directed to them according to the ["Receiving a Message From a User"](#Receiving-a-Message-From-a-User) section and the `isDelivered` status of the message is set to `true`. If the recipient is not authenticated, the message will be received along with all messages when requested according to the ["Fetching Message History With the User"](#Fetching-Message-History-With-the-User) section.
 
 <details>
 <summary markdown="span">Request to the Server</summary>
