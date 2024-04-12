@@ -423,7 +423,7 @@ Description: Used to send a message to another user. If the message recipient is
 where:
 
 - `id` - request identifier
-- `login` - login of the user to whom the message is being sent
+- `to` - login of the user to whom the message is being sent
 - `text` - text of the message
 </details>
 
