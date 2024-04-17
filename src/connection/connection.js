@@ -52,7 +52,7 @@ module.exports = class Connection {
     switch (message.type) {
       case RequestTypes.USER_LOGIN:
       case RequestTypes.USER_LOGOUT: {
-        const authController = new AuthController();
+        const authController = new AuthController(this.#user);
         answer.payload = authController.run(message);
 
         if (answer.payload.user) {

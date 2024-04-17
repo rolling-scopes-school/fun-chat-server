@@ -24,7 +24,7 @@ const MessageReadedHandler = require('./handlers/message-readed-handler');
 
 module.exports = class MessageController extends DefaultController {
   /**
-   * @param {string} currentUserLogin
+   * @param {import('../../model/user/user-model')} currentUser
    */
   constructor(currentUser = null) {
     super();
