@@ -1,6 +1,6 @@
 {
   "name": "rs-chat-api",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Api for RSSchool websocket task",
   "main": "index.js",
   "scripts": {
