@@ -22,7 +22,7 @@ module.exports = class AuthController extends DefaultController {
     if (currentUser) {
       loginCurrentUser = currentUser.login;
     }
-    this.handler = new LoginHandler();
+    this.handler = new LoginHandler(loginCurrentUser);
     this.handler
       .setNextHandler(new LogoutHandler(loginCurrentUser))
       .setNextHandler(new LoginExternalHandler())
