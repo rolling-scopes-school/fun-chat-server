@@ -131,6 +131,18 @@ where:
   }
   ```
 
+- another user is already authorized in this connection 
+
+  ```javascript
+  {
+    id: string,
+    type: "ERROR",
+    payload: {
+      error: "another user is already authorized in this connection",
+    }
+  }
+  ```
+
 - the provided password does not match the provided login
 
   ```javascript
