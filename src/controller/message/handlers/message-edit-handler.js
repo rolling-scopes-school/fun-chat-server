@@ -72,7 +72,7 @@ module.exports = class MessageEditHandler extends DefaultHandler {
         type: RequestTypes.MSG_EDITED_FROM_SERVER,
         payload: result,
       };
-      userConnection.messageHandler(messageFrom);
+      userConnection.innerMessageHandler(messageFrom);
     }
 
     return result;

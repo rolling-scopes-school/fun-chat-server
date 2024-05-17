@@ -69,7 +69,7 @@ module.exports = class MessageReadedHandler extends DefaultHandler {
         type: RequestTypes.MSG_READED_FROM_SERVER,
         payload: result,
       };
-      userConnection.messageHandler(messageFrom);
+      userConnection.innerMessageHandler(messageFrom);
     }
 
     return result;
