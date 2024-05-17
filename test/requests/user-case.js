@@ -78,6 +78,13 @@ function getAuthUserRequest() {
           error: 'a user with this login is already authorized',
         },
       },
+      anotherUserAuthInConnection: {
+        id: `${userIndex}`,
+        type: RequestTypes.ERROR,
+        payload: {
+          error: 'another user is already authorized in this connection',
+        },
+      },
       incorrectPass: {
         id: `${userIndex}`,
         type: RequestTypes.ERROR,

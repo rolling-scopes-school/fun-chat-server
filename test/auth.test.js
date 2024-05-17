@@ -295,6 +295,23 @@ describe('Login test cases', () => {
 
     client.close();
   });
+  test('Two user login on the same connection', async () => {
+    const userFirst = getAuthUserRequest();
+    const userSecond = getAuthUserRequest();
+    const serverAnswers = [];
+
+    const client = await createClient();
+    client.on('message', (message) => serverAnswers.push(JSON.parse(message)));
+
+    client.send(JSON.stringify(userFirst.request.login));
+    await waitSomeAnswers(serverAnswers, 1);
+    client.send(JSON.stringify(userSecond.request.login));
+    await waitSomeAnswers(serverAnswers, 2);
+
+    expect(serverAnswers[1]).toEqual(userSecond.error.anotherUserAuthInConnection);
+
+    client.close();
+  });
 });
 
 describe('Logout test cases', () => {
