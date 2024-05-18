@@ -75,7 +75,7 @@ module.exports = class MessageSendHandler extends DefaultHandler {
             message: result.message,
           },
         };
-        userConnection.messageHandler(messageTo);
+        userConnection.innerMessageHandler(messageTo);
       }
     }
 

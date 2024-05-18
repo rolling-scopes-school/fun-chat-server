@@ -96,7 +96,7 @@ module.exports = class MessageFromUserHandler extends DefaultHandler {
           },
         },
       };
-      userConnection.messageHandler(messageFrom);
+      userConnection.innerMessageHandler(messageFrom);
       return true;
     }
     return false;

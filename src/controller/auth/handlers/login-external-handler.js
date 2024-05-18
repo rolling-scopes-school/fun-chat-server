@@ -21,7 +21,7 @@ module.exports = class LoginExternalHandler extends DefaultHandler {
     const allConnection = ConnectionPool.getInstance().getAuthConnections();
     allConnection.forEach((connection) => {
       if (connection.getUser().login !== message.payload.user.login) {
-        connection.messageHandler(message);
+        connection.innerMessageHandler(message);
       }
     });
 

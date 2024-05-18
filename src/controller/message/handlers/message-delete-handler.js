@@ -69,7 +69,7 @@ module.exports = class MessageDeleteHandler extends DefaultHandler {
         type: RequestTypes.MSG_DELETED_FROM_SERVER,
         payload: result,
       };
-      userConnection.messageHandler(messageFrom);
+      userConnection.innerMessageHandler(messageFrom);
     }
 
     return result;

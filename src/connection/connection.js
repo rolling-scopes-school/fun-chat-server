@@ -80,12 +80,6 @@ module.exports = class Connection {
         answer.payload = userController.run(message);
         break;
       }
-      case RequestTypes.MSG_DELIVERED:
-      case RequestTypes.USER_EXTERNAL_LOGIN:
-      case RequestTypes.USER_EXTERNAL_LOGOUT: {
-        answer.payload = message.payload;
-        break;
-      }
       case RequestTypes.MSG_SEND:
       case RequestTypes.MSG_READED:
       case RequestTypes.MSG_EDIT:
@@ -93,6 +87,38 @@ module.exports = class Connection {
       case RequestTypes.MSG_FROM_USER: {
         const messageController = new MessageController(this.#user);
         answer.payload = messageController.run(message);
+        break;
+      }
+      default: {
+        answer.type = RequestTypes.ERROR;
+        answer.payload = {
+          error: TYPE_INVALID,
+        };
+      }
+    }
+
+    if ('error' in answer.payload) {
+      answer.type = RequestTypes.ERROR;
+    }
+
+    this.#sendMessage(answer);
+  }
+  /**
+   * @param {import('../model/connection-message/connection-message-model').ConnectionMessage} message
+   */
+  innerMessageHandler(message) {
+    /** @type {import('../model/connection-message/connection-message-model').ConnectionMessage} */
+    const answer = {
+      id: message.id,
+      type: message.type,
+      payload: null,
+    };
+
+    switch (message.type) {
+      case RequestTypes.MSG_DELIVERED:
+      case RequestTypes.USER_EXTERNAL_LOGIN:
+      case RequestTypes.USER_EXTERNAL_LOGOUT: {
+        answer.payload = message.payload;
         break;
       }
       case RequestTypes.MSG_READED_FROM_SERVER: {
