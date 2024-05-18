@@ -1,13 +1,23 @@
 const UserModel = require('../../../model/user/user-model');
 const UserState = require('../../../pool/user-pool');
 const DefaultHandler = require('../../default-handler');
-const { HANDLER_USER_ALREADY_LOGGED_TEXT, HANDLER_PASSWORD_INVALID_TEXT } = require('./handler-messages');
+const {
+  HANDLER_USER_ALREADY_LOGGED_TEXT,
+  HANDLER_PASSWORD_INVALID_TEXT,
+  HANDLER_ANOTHER_USER_LOGGED_IN_CONN_TEXT,
+} = require('./handler-messages');
 const { PAYLOAD_INVALID, TYPE_INVALID } = require('../../default-messages');
 const { RequestTypes } = require('../../../connection/request-types');
 
 module.exports = class LoginHandler extends DefaultHandler {
   type = RequestTypes.USER_LOGIN;
-
+  /**
+   * @param {string} currentUserLogin
+   */
+  constructor(currentUserLogin) {
+    super();
+    this.currentUserLogin = currentUserLogin;
+  }
   /**
    * @param {import('../../../model/connection-message/connection-message-model').ConnectionMessage} connectionMessage
    * @returns {import('../../default-controller').DefaultPayload}
@@ -19,9 +29,12 @@ module.exports = class LoginHandler extends DefaultHandler {
     if (this.type !== connectionMessage.type && !this.nextHandler) {
       return this.getErrorAnswer(TYPE_INVALID);
     }
-
     if (!UserModel.isCorrectPayload(connectionMessage.payload.user)) {
       return this.getErrorAnswer(PAYLOAD_INVALID);
+    }
+
+    if (this.currentUserLogin !== null && this.currentUserLogin !== connectionMessage.payload.user.login) {
+      return this.getErrorAnswer(HANDLER_ANOTHER_USER_LOGGED_IN_CONN_TEXT);
     }
 
     const result = {
