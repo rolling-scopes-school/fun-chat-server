@@ -23,9 +23,9 @@ module.exports = class Logger {
     if (process.env.LOG.toLowerCase() === 'none') {
       return;
     }
-    const type = message.type === 'error' ? chalk.red(message.type) : chalk.blue(message.type);
+    const type = message.type.toLowerCase() === 'error' ? chalk.red(message.type) : chalk.green(message.type);
     console.log(
-      `${this.#getDate()} ${chalk.white('Connection')} ${type} ${chalk.white('id:')} ${chalk.blue(message.id)}`
+      `${this.#getDate()} ${chalk.bold.underline.white('Connection')} ${type} ${chalk.underline.white('id:')} ${chalk.white(message.id)}`
     );
   }
   /**
@@ -54,12 +54,12 @@ module.exports = class Logger {
       return;
     }
     const type =
-      message.data.type === process.env.ERROR ? chalk.red(message.data.type) : chalk.green(message.data.type);
+      message.data.type.toLowerCase() === 'error' ? chalk.red(message.data.type) : chalk.green(message.data.type);
     const request = message.header === 'Incoming' ? chalk.bold.magenta('Incoming') : chalk.bold.cyan('Outcoming');
     const header = `${request} ${type}`;
-    const connectionId = `${chalk.white('Connection id:')} ${chalk.blue(message.connection)}`;
-    const messageId = `${chalk.white('Message id:')} ${chalk.blue(message.data.id)}`;
-    const payload = `${chalk.white('Payload:')} ${chalk.blue(JSON.stringify(message.data.payload))}`;
+    const connectionId = `${chalk.bold.white('Connection id:')} ${chalk.white(message.connection)}`;
+    const messageId = `${chalk.bold.white('Message id:')} ${chalk.white(message.data.id)}`;
+    const payload = `${chalk.bold.white('Payload:')} ${chalk.white(JSON.stringify(message.data.payload))}`;
     console.log(
       `${this.#getDate()} ${header}
                        ${connectionId}
