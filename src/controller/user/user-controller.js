@@ -17,8 +17,12 @@ const UserInActiveHandler = require('./handler/user-inactive-handler');
  */
 
 module.exports = class UserController extends DefaultController {
-  constructor() {
-    super();
+  /**
+   * @param {import('../../model/user/user-model')} currentUser
+   */
+  constructor(currentUser = null) {
+    super(currentUser);
+
     this.handler = new UserActiveHandler();
     this.handler.setNextHandler(new UserInActiveHandler());
   }

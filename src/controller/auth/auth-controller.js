@@ -16,7 +16,9 @@ module.exports = class AuthController extends DefaultController {
    * @param {import('../../model/user/user-model')} currentUser
    */
   constructor(currentUser = null) {
-    super();
+    super(currentUser);
+
+    this.isOnlyAuthAccess = false;
 
     let loginCurrentUser = null;
     if (currentUser) {

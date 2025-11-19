@@ -27,7 +27,7 @@ module.exports = class MessageController extends DefaultController {
    * @param {import('../../model/user/user-model')} currentUser
    */
   constructor(currentUser = null) {
-    super();
+    super(currentUser);
 
     let loginCurrentUser = null;
     if (currentUser) {

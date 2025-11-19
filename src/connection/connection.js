@@ -76,7 +76,7 @@ module.exports = class Connection {
       }
       case RequestTypes.USER_ACTIVE:
       case RequestTypes.USER_INACTIVE: {
-        const userController = new UserController();
+        const userController = new UserController(this.#user);
         answer.payload = userController.run(message);
         break;
       }
