@@ -252,18 +252,6 @@ where:
   }
   ```
 
-- the user with the specified login is already authorized in another client connection
-
-  ```javascript
-  {
-    id: string,
-    type: "ERROR",
-    payload: {
-      error: "a user with this login is already authorized",
-    }
-  }
-  ```
-
   where:
 
 - `id` - request identifier received from the client
@@ -332,7 +320,8 @@ where:
 
 ### Getting All Authenticated Users
 
-Initiator: Client application
+Initiator: Client application  
+Restrictions: Only for connection with an authorized user
 
 Description: Used to retrieve a list of all authenticated users.
 
@@ -373,7 +362,8 @@ where:
 
 ### Getting All Unauthorized Users
 
-Initiator: Client application
+Initiator: Client application  
+Restrictions: Only for connection with an authorized user
 
 Description: Used to retrieve a list of all unauthorized users.
 
@@ -414,7 +404,8 @@ where:
 
 ### Sending a Message to a User
 
-Initiator: Client application
+Initiator: Client application  
+Restrictions: Only for connection with an authorized user
 
 Description: Used to send a message to another user. If the message recipient is authenticated, the message is immediately directed to them according to the ["Receiving a Message From a User"](#Receiving-a-Message-From-a-User) section and the `isDelivered` status of the message is set to `true`. If the recipient is not authenticated, the message will be received along with all messages when requested according to the ["Fetching Message History With the User"](#Fetching-Message-History-With-the-User) section.
 
@@ -506,18 +497,6 @@ where:
   }
   ```
 
-- the user sending the request is not authenticated
-
-  ```javascript
-  {
-    id: string,
-    type: "ERROR",
-    payload: {
-      error: 'user not registered or not logged',
-    }
-  }
-  ```
-
   where:
 
 - `id` - request identifier received from the client
@@ -570,7 +549,8 @@ where:
 
 ### Fetching Message History With the User
 
-Initiator: Client application
+Initiator: Client application  
+Restrictions: Only for connection with an authorized user
 
 Description: Used to retrieve a list of all messages with a specific user. All messages with the `isDelivered` status set to `false` will update the status to `true` if the request is made by the recipient user. In this case, for each message, the server will make a request to the sender user according to the ["Notification of Message Delivery Status Change"](#Notification-of-Message-Delivery-Status-Change) section.
 
@@ -642,18 +622,6 @@ where:
   }
   ```
 
-- the user sending the request is not authenticated
-
-  ```javascript
-  {
-    id: string,
-    type: "ERROR",
-    payload: {
-      error: 'user not registered or not logged',
-    }
-  }
-  ```
-
   where:
 
 - `id` - request identifier received from the client
@@ -694,7 +662,8 @@ where:
 
 ### Message Read Status Change
 
-Initiator: Client application
+Initiator: Client application  
+Restrictions: Only for connection with an authorized user
 
 Description: Used to change the status of `isReaded` to `true`. Upon successful processing of the request, the server sends a notification to the sender in accordance with ["Notification of Message Read Status Change"](#Notification-of-Message-Read-Status-Change) section.
 
@@ -813,7 +782,8 @@ where:
 
 ### Message Deletion
 
-Initiator: Client application
+Initiator: Client application  
+Restrictions: Only for connection with an authorized user
 
 Description: Used to delete a message sent to another user. If the recipient is authenticated, a notification is sent to them according to ["Notification of Message Deletion"](#Notification-of-Message-Deletion) section.
 
@@ -932,7 +902,8 @@ where:
 
 ### Message Text Editing
 
-Initiator: Client application
+Initiator: Client application  
+Restrictions: Only for connection with an authorized user
 
 Description: Used to edit the text of a message sent to another user. If the recipient of the message is authorized, a notification is sent to them in accordance with ["Notification of Message Text Editing"](#Notification-of-Message-Text-Editing) section.
 
@@ -1135,6 +1106,27 @@ Server Responses for Common Errors
     type: "ERROR",
     payload: {
       error: "incorrect payload parameters",
+    }
+  }
+  ```
+
+  where:
+
+- `id` - request identifier received from the client
+- `error` - description of the error
+</details>
+
+<details>
+<summary markdown="span">Refusal to execute a request</summary>
+
+- occurs when a request requiring pre-authorization is made from a connection with an unauthorized user and cannot be fulfilled by the server
+
+  ```javascript
+  {
+    id: string,
+    type: "ERROR",
+    payload: {
+      error: "the user was not authorized cannot be executed",
     }
   }
   ```
