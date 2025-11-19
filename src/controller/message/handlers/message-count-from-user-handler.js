@@ -10,7 +10,7 @@ const { PAYLOAD_INVALID, TYPE_INVALID } = require('../../default-messages');
 const { RequestTypes } = require('../../../connection/request-types');
 
 module.exports = class MessageFromUserHandler extends DefaultHandler {
-  type = RequestTypes.MSG_COUNT_FROM_USER;
+  type = RequestTypes.MSG_COUNT_NOT_READED_FROM_USER;
   /**
    * @param {string} currentUserLogin
    */
@@ -52,13 +52,16 @@ module.exports = class MessageFromUserHandler extends DefaultHandler {
     }
 
     const result = {
-      messages: 0,
+      count: 0,
     };
 
     const messagePool = MessagePool.getInstance();
     const messagesCurrentTo = messagePool.getMessageByUserFromTo(message.payload.user.login, this.currentUserLogin);
-
-    result.messages = messagesCurrentTo.length;
+    for (let i = 0; i < messagesCurrentTo.length; i += 1) {
+      if (!messagesCurrentTo[i].isReaded) {
+        result.count += 1;
+      }
+    }
 
     return result;
   }

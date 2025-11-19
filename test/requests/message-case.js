@@ -27,7 +27,7 @@ function getMessageRequest(userFirst, userSecond) {
       },
       messageCountHistoryToUser: {
         id: `${requestIndex}`,
-        type: RequestTypes.MSG_COUNT_FROM_USER,
+        type: RequestTypes.MSG_COUNT_NOT_READED_FROM_USER,
         payload: {
           user: {
             login: userSecond.request.login.payload.user.login,

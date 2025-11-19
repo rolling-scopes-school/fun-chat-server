@@ -732,7 +732,7 @@ describe('Get count message from user', () => {
     await server.close();
   });
 
-  test('Get count messages from logged user', async () => {
+  test('Get count messages (all not readed) from logged user', async () => {
     const countMessages = 5;
 
     const userFirst = getAuthUserRequest();
@@ -763,7 +763,54 @@ describe('Get count message from user', () => {
     client.send(JSON.stringify(messageToUserFirst.request.messageCountHistoryToUser));
     await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
 
-    expect(serverAnswers[serverAnswers.length - 1].payload.messages).toEqual(countMessages);
+    expect(serverAnswers[serverAnswers.length - 1].payload.count).toEqual(countMessages);
+
+    client.close();
+    clientSecond.close();
+  });
+  test('Get count messages (part not readed) from logged user', async () => {
+    const countMessages = 10;
+    const countReadedMessages = 4;
+
+    const userFirst = getAuthUserRequest();
+    const userSecond = getAuthUserRequest();
+    const messageToUserFirst = getMessageRequest(userFirst, userSecond);
+    const messageToUserSecond = getMessageRequest(userSecond, userFirst);
+    const serverAnswers = [];
+
+    const client = await createClient();
+    const clientSecond = await createClient();
+    client.on('message', (message) => serverAnswers.push(JSON.parse(message)));
+    clientSecond.on('message', (message) => serverAnswers.push(JSON.parse(message)));
+
+    client.send(JSON.stringify(userFirst.request.login));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+    client.send(JSON.stringify(userFirst.request.logout));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+    clientSecond.send(JSON.stringify(userSecond.request.login));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+
+    for (let i = 0; i < countMessages; i += 1) {
+      clientSecond.send(JSON.stringify(messageToUserSecond.request.messageToUser));
+    }
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + countMessages);
+
+    client.send(JSON.stringify(userFirst.request.login));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 2);
+    client.send(JSON.stringify(messageToUserFirst.request.messageHistoryToUser));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+
+    const historyAnswer = serverAnswers[serverAnswers.length - 1];
+    for (let i = 0; i < countReadedMessages; i += 1) {
+      messageToUserFirst.request.messageReaded.payload.message.id = historyAnswer.payload.messages[i].id;
+      client.send(JSON.stringify(messageToUserFirst.request.messageReaded));
+    }
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1 + countReadedMessages);
+
+    client.send(JSON.stringify(messageToUserFirst.request.messageCountHistoryToUser));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+
+    expect(serverAnswers[serverAnswers.length - 1].payload.count).toEqual(countMessages - countReadedMessages);
 
     client.close();
     clientSecond.close();
@@ -802,7 +849,7 @@ describe('Get count message from user', () => {
     client.send(JSON.stringify(messageToUserFirst.request.messageCountHistoryToUser));
     await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
 
-    expect(serverAnswers[serverAnswers.length - 1].payload.messages).toEqual(countMessages);
+    expect(serverAnswers[serverAnswers.length - 1].payload.count).toEqual(countMessages);
 
     client.close();
     clientSecond.close();
