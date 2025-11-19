@@ -5,7 +5,6 @@ const {
   HANDLER_LOGIN_INVALID_TEXT,
   HANDLER_LOGOUT_INVALID_TEXT,
   HANDLER_PASSWORD_INVALID_TEXT,
-  HANDLER_USER_ALREADY_LOGGED_TEXT,
 } = require('./handler-messages');
 const { PAYLOAD_INVALID, TYPE_INVALID } = require('../../default-messages');
 const { RequestTypes } = require('../../../connection/request-types');
@@ -51,11 +50,8 @@ module.exports = class LogoutHandler extends DefaultHandler {
     if (userModel.password !== connectionMessage.payload.user.password) {
       return this.getErrorAnswer(HANDLER_PASSWORD_INVALID_TEXT);
     }
-    if (!userModel.isLogined) {
+    if (!userModel.isLogined || userModel.login !== this.currentUserLogin) {
       return this.getErrorAnswer(HANDLER_LOGOUT_INVALID_TEXT);
-    }
-    if (userModel.login !== this.currentUserLogin) {
-      return this.getErrorAnswer(HANDLER_USER_ALREADY_LOGGED_TEXT);
     }
 
     userModel.isLogined = false;
