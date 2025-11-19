@@ -84,7 +84,8 @@ module.exports = class Connection {
       case RequestTypes.MSG_READED:
       case RequestTypes.MSG_EDIT:
       case RequestTypes.MSG_DELETE:
-      case RequestTypes.MSG_FROM_USER: {
+      case RequestTypes.MSG_FROM_USER:
+      case RequestTypes.MSG_COUNT_FROM_USER: {
         const messageController = new MessageController(this.#user);
         answer.payload = messageController.run(message);
         break;

@@ -25,6 +25,15 @@ function getMessageRequest(userFirst, userSecond) {
           },
         },
       },
+      messageCountHistoryToUser: {
+        id: `${requestIndex}`,
+        type: RequestTypes.MSG_COUNT_FROM_USER,
+        payload: {
+          user: {
+            login: userSecond.request.login.payload.user.login,
+          },
+        },
+      },
       messageReaded: {
         id: `${requestIndex}`,
         type: RequestTypes.MSG_READED,
@@ -119,6 +128,13 @@ function getMessageRequest(userFirst, userSecond) {
         type: RequestTypes.MSG_FROM_USER,
         payload: {
           messages: [],
+        },
+      },
+      messageCountHistoryToUser: {
+        id: `${requestIndex}`,
+        type: RequestTypes.MSG_COUNT_FROM_USER,
+        payload: {
+          messages: 0,
         },
       },
       messageDelivered: {
