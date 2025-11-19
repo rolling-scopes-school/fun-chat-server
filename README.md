@@ -628,6 +628,87 @@ where:
 - `error` - description of the cause of the error
 </details>
 
+### Fetching Count of Unread Messages With the User
+
+Initiator: Client application  
+Restrictions: Only for connection with an authorized user
+
+Description: Used to get only the number of unread messages without getting the message content. Messages with the `isDelivered` status set to `false` will not update the status to `true`.
+
+<details>
+<summary markdown="span">Request to the Server</summary>
+
+```javascript
+{
+  id: string,
+  type: "MSG_COUNT_NOT_READED_FROM_USER",
+  payload: {
+    user: {
+      login: string,
+    }
+  }
+}
+```
+
+where:
+
+- `id` - request identifier
+- `login` - username of the user with whom the count unread messages is requested
+</details>
+
+<details>
+<summary markdown="span">Server Response</summary>
+
+```javascript
+{
+  id: string,
+  type: "MSG_COUNT_NOT_READED_FROM_USER",
+  payload: {
+    count: number,
+  }
+}
+```
+
+where:
+
+- `id` - request identifier received from the client
+- `count` - number of unread messages with the requested user
+
+</details>
+
+<details>
+<summary markdown="span">Server Responses in Case of Errors</summary>
+
+- the sender's and recipient's logins match
+
+  ```javascript
+  {
+    id: string,
+    type: "ERROR",
+    payload: {
+      error: 'sender and recipient logins are the same',
+    }
+  }
+  ```
+
+- the user with the specified login does not exist
+
+  ```javascript
+  {
+    id: string,
+    type: "ERROR",
+    payload: {
+      error: 'the user with the specified login does not exist',
+    }
+  }
+  ```
+
+  where:
+
+- `id` - request identifier received from the client
+- `error` - description of the cause of the error
+</details>
+
 ### Notification of Message Delivery Status Change
 
 Initiator: Server application
@@ -1117,7 +1198,7 @@ Server Responses for Common Errors
 </details>
 
 <details>
-<summary markdown="span">Refusal to execute a request</summary>
+<summary markdown="span">Denying a request to an unauthorized user</summary>
 
 - occurs when a request requiring pre-authorization is made from a connection with an unauthorized user and cannot be fulfilled by the server
 
