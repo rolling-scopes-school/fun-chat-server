@@ -2,11 +2,7 @@ const MessagePool = require('../../../pool/message-pool');
 const DefaultHandler = require('../../default-handler');
 const ConnectionPool = require('../../../pool/connection-pool');
 const UserPool = require('../../../pool/user-pool');
-const {
-  HANDLER_RECEIVER_INVALID,
-  HANDLER_RECEIVER_NOT_FOUND,
-  HANDLER_USER_NOT_REGISTERED,
-} = require('./handler-messages');
+const { HANDLER_RECEIVER_INVALID, HANDLER_RECEIVER_NOT_FOUND } = require('./handler-messages');
 const { PAYLOAD_INVALID, TYPE_INVALID } = require('../../default-messages');
 const { RequestTypes } = require('../../../connection/request-types');
 
@@ -41,10 +37,6 @@ module.exports = class MessageFromUserHandler extends DefaultHandler {
 
     if (this.currentUserLogin === message.payload.user.login) {
       return this.getErrorAnswer(HANDLER_RECEIVER_INVALID);
-    }
-
-    if (this.currentUserLogin === null) {
-      return this.getErrorAnswer(HANDLER_USER_NOT_REGISTERED);
     }
 
     const userTo = UserPool.getInstance().getUser(message.payload.user.login);
