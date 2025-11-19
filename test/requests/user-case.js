@@ -148,6 +148,15 @@ function getAnotherUsersRequest() {
         },
       },
     },
+    error: {
+      userNotAuth: {
+        id: `${requestIndex}`,
+        type: RequestTypes.ERROR,
+        payload: {
+          error: 'the user was not authorized cannot be executed',
+        },
+      },
+    },
   };
 }
 

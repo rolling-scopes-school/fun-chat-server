@@ -205,7 +205,7 @@ describe('Send message to user', () => {
     client.send(JSON.stringify(messageToUser.request.messageToUser));
     await waitSomeAnswers(serverAnswers, 1);
 
-    expect(serverAnswers[0]).toEqual(messageToUser.error.messageToNotAuth);
+    expect(serverAnswers[0]).toEqual(messageToUser.error.userNotAuth);
 
     client.close();
     clientSecond.close();
@@ -229,7 +229,7 @@ describe('Send message to user', () => {
     client.send(JSON.stringify(messageToUser.request.messageToUser));
     await waitSomeAnswers(serverAnswers, 4);
 
-    expect(serverAnswers[3]).toEqual(messageToUser.error.messageToNotAuth);
+    expect(serverAnswers[3]).toEqual(messageToUser.error.userNotAuth);
 
     client.close();
     clientSecond.close();
@@ -617,7 +617,7 @@ describe('Get user message history', () => {
     client.send(JSON.stringify(messageToUser.request.messageHistoryToUser));
     await waitSomeAnswers(serverAnswers, 1);
 
-    expect(serverAnswers[0]).toEqual(messageToUser.error.messageToNotAuth);
+    expect(serverAnswers[0]).toEqual(messageToUser.error.userNotAuth);
 
     client.close();
   });
@@ -637,7 +637,7 @@ describe('Get user message history', () => {
     client.send(JSON.stringify(messageToUser.request.messageHistoryToUser));
     await waitSomeAnswers(serverAnswers, 3);
 
-    expect(serverAnswers[2]).toEqual(messageToUser.error.messageToNotAuth);
+    expect(serverAnswers[2]).toEqual(messageToUser.error.userNotAuth);
 
     client.close();
   });
@@ -1122,7 +1122,7 @@ describe('Change message readed status', () => {
     await waitSomeAnswers(serverAnswers, 9);
     await waitTimeAnswers(5);
 
-    expect(serverAnswers[8]).toEqual(messageToUser.error.messageUserNotRecipient);
+    expect(serverAnswers[8]).toEqual(messageToUser.error.userNotAuth);
     expect(serverAnswers.length).toBe(9);
 
     client.close();
@@ -1155,7 +1155,7 @@ describe('Change message readed status', () => {
     await waitSomeAnswers(serverAnswers, 9);
     await waitTimeAnswers(5);
 
-    expect(serverAnswers[8]).toEqual(messageToUser.error.messageUserNotRecipient);
+    expect(serverAnswers[8]).toEqual(messageToUser.error.userNotAuth);
     expect(serverAnswers.length).toBe(9);
 
     client.close();
@@ -1438,7 +1438,7 @@ describe('Change message deleted status', () => {
     await waitSomeAnswers(serverAnswers, 8);
     await waitTimeAnswers(5);
 
-    expect(serverAnswers[7]).toEqual(messageToUser.error.messageUserNotSender);
+    expect(serverAnswers[7]).toEqual(messageToUser.error.userNotAuth);
     expect(serverAnswers.length).toBe(8);
 
     client.close();
@@ -1470,7 +1470,7 @@ describe('Change message deleted status', () => {
     await waitSomeAnswers(serverAnswers, 8);
     await waitTimeAnswers(5);
 
-    expect(serverAnswers[7]).toEqual(messageToUser.error.messageUserNotSender);
+    expect(serverAnswers[7]).toEqual(messageToUser.error.userNotAuth);
     expect(serverAnswers.length).toBe(8);
 
     client.close();
@@ -1756,7 +1756,7 @@ describe('Change message edit status', () => {
     await waitSomeAnswers(serverAnswers, 8);
     await waitTimeAnswers(5);
 
-    expect(serverAnswers[7]).toEqual(messageToUser.error.messageUserNotSender);
+    expect(serverAnswers[7]).toEqual(messageToUser.error.userNotAuth);
     expect(serverAnswers.length).toBe(8);
 
     client.close();
@@ -1788,7 +1788,7 @@ describe('Change message edit status', () => {
     await waitSomeAnswers(serverAnswers, 8);
     await waitTimeAnswers(5);
 
-    expect(serverAnswers[7]).toEqual(messageToUser.error.messageUserNotSender);
+    expect(serverAnswers[7]).toEqual(messageToUser.error.userNotAuth);
     expect(serverAnswers.length).toBe(8);
 
     client.close();
