@@ -155,6 +155,10 @@ module.exports = class Connection {
 
     this.#sendMessage(answer);
   }
+  close() {
+    this.#socket.close();
+    this.#closeHandler();
+  }
   #clientMessageHandler(data) {
     let message;
     try {

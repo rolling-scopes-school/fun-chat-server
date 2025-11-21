@@ -6,12 +6,15 @@ const { v4: uuidv4 } = require('uuid');
 const Connection = require('./connection/connection');
 const Logger = require('./logger/logger');
 const ConnectionPool = require('./pool/connection-pool');
+const UserPool = require('./pool/user-pool');
+const MessagePool = require('./pool/message-pool');
 
 module.exports = class Socket {
   #socket = null;
   #httpServer = null;
   #logger = new Logger();
   #connectionPool = ConnectionPool.getInstance();
+  #isClearing = false;
 
   constructor() {
     // this.#socket = new WebSocket.Server({ port: process.env.SERVER_PORT });
@@ -28,6 +31,11 @@ module.exports = class Socket {
 
     this.#logger.message(`server runnig on port ${process.env.SERVER_PORT}`);
     this.#logger.message(`server timezone utc`);
+
+    const clearInterval = process.env.CLEAR_INTERVAL * 1000;
+    if (clearInterval) {
+      this.#clearHandler(clearInterval);
+    }
   }
   close() {
     this.#socket.close();
@@ -37,6 +45,10 @@ module.exports = class Socket {
     this.#logger.message(`server shut down`);
   }
   #newConnectionHandler() {
+    if (this.#isClearing) {
+      return;
+    }
+
     const connectionIndex = this.#socket.clients.size - 1;
     const socket = [...this.#socket.clients.values()][connectionIndex];
 
@@ -62,5 +74,27 @@ module.exports = class Socket {
   #errorConnectionHandler(connectionId) {
     this.#logger.connection({ type: 'error', id: connectionId });
     this.#closeConnectionHandler(connectionId);
+  }
+  /**
+   * @param {number} time
+   */
+  #clearHandler(time) {
+    setInterval(() => {
+      this.#isClearing = true;
+      this.#logger.message('start clearing server');
+
+      const connections = this.#connectionPool.getAllConnections();
+      connections.forEach((connection) => connection.close());
+      this.#connectionPool.clear();
+
+      const userPool = UserPool.getInstance();
+      userPool.clear();
+
+      const messagePool = MessagePool.getInstance();
+      messagePool.clear();
+
+      this.#logger.message('end clearing server');
+      this.#isClearing = false;
+    }, time);
   }
 };
