@@ -79,6 +79,7 @@ module.exports = class Socket {
    * @param {number} time
    */
   #clearHandler(time) {
+    this.#logger.message(`periodic server cleaning every ${time} ms`);
     setInterval(() => {
       this.#isClearing = true;
       this.#logger.message('start clearing server');
@@ -86,12 +87,15 @@ module.exports = class Socket {
       const connections = this.#connectionPool.getAllConnections();
       connections.forEach((connection) => connection.close());
       this.#connectionPool.clear();
-
-      const userPool = UserPool.getInstance();
-      userPool.clear();
+      this.#logger.message(' - connections clearing success');
 
       const messagePool = MessagePool.getInstance();
       messagePool.clear();
+      this.#logger.message(' - messages clearing success');
+
+      const userPool = UserPool.getInstance();
+      userPool.clear();
+      this.#logger.message(' - user clearing success');
 
       this.#logger.message('end clearing server');
       this.#isClearing = false;
