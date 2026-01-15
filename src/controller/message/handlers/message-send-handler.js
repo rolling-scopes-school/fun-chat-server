@@ -1,11 +1,7 @@
 const MessagePool = require('../../../pool/message-pool');
 const Message = require('../../../model/message/message-model');
 const DefaultHandler = require('../../default-handler');
-const {
-  HANDLER_RECEIVER_INVALID,
-  HANDLER_RECEIVER_NOT_FOUND,
-  HANDLER_USER_NOT_REGISTERED,
-} = require('./handler-messages');
+const { HANDLER_RECEIVER_INVALID, HANDLER_RECEIVER_NOT_FOUND } = require('./handler-messages');
 const { PAYLOAD_INVALID, TYPE_INVALID } = require('../../default-messages');
 const ConnectionPool = require('../../../pool/connection-pool');
 const UserPool = require('../../../pool/user-pool');
@@ -39,10 +35,6 @@ module.exports = class MessageSendHandler extends DefaultHandler {
       !Message.isCorrectShortPayload(message.payload.message)
     ) {
       return this.getErrorAnswer(PAYLOAD_INVALID);
-    }
-
-    if (this.from === null) {
-      return this.getErrorAnswer(HANDLER_USER_NOT_REGISTERED);
     }
 
     if (this.from === message.payload.message.to) {

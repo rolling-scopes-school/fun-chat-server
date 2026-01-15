@@ -721,7 +721,7 @@ describe('External logout cases', () => {
     client.close();
     clientSecond.close();
   });
-  test('Another user logout fail in another connecction', async () => {
+  test('Another user logout fail in connection with auth user', async () => {
     const userFirst = getAuthUserRequest();
     const userSecond = getAuthUserRequest();
     const serverAnswers = [];
@@ -738,7 +738,27 @@ describe('External logout cases', () => {
     await waitSomeAnswers(serverAnswers, 3);
 
     expect(serverAnswers.length).toBe(3);
-    expect(serverAnswers[2].payload).toEqual(userSecond.error.alreadyAuth.payload);
+    expect(serverAnswers[2].payload).toEqual(userSecond.error.notAuth.payload);
+
+    clientFirst.close();
+    clientSecond.close();
+  });
+  test('Another user logout fail in new connection', async () => {
+    const userFirst = getAuthUserRequest();
+    const serverAnswers = [];
+
+    const clientFirst = await createClient();
+    clientFirst.on('message', (message) => serverAnswers.push(JSON.parse(message)));
+    const clientSecond = await createClient();
+    clientSecond.on('message', (message) => serverAnswers.push(JSON.parse(message)));
+
+    clientFirst.send(JSON.stringify(userFirst.request.login));
+    await waitSomeAnswers(serverAnswers, 1);
+    clientSecond.send(JSON.stringify(userFirst.request.logout));
+    await waitSomeAnswers(serverAnswers, 2);
+
+    expect(serverAnswers.length).toBe(2);
+    expect(serverAnswers[1].payload).toEqual(userFirst.error.notAuth.payload);
 
     clientFirst.close();
     clientSecond.close();
