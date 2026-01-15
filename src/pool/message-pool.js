@@ -91,4 +91,7 @@ module.exports = class MessagePool {
     const result = this.#messages.filter((message) => message.id === id);
     return result[0] || null;
   }
+  clear() {
+    this.#messages = [];
+  }
 };

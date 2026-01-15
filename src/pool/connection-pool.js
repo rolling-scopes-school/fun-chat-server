@@ -51,4 +51,7 @@ module.exports = class ConnectionPool {
   removeConnection(connectionId) {
     this.#connections.delete(connectionId);
   }
+  clear() {
+    this.#connections.clear();
+  }
 };
