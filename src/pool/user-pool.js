@@ -60,4 +60,7 @@ module.exports = class UserPool {
     user.isLogined = updatedUser.isLogined;
     return true;
   }
+  clear() {
+    this.#users = [];
+  }
 };

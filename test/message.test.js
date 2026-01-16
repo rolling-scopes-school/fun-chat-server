@@ -205,7 +205,7 @@ describe('Send message to user', () => {
     client.send(JSON.stringify(messageToUser.request.messageToUser));
     await waitSomeAnswers(serverAnswers, 1);
 
-    expect(serverAnswers[0]).toEqual(messageToUser.error.messageToNotAuth);
+    expect(serverAnswers[0]).toEqual(messageToUser.error.userNotAuth);
 
     client.close();
     clientSecond.close();
@@ -229,7 +229,7 @@ describe('Send message to user', () => {
     client.send(JSON.stringify(messageToUser.request.messageToUser));
     await waitSomeAnswers(serverAnswers, 4);
 
-    expect(serverAnswers[3]).toEqual(messageToUser.error.messageToNotAuth);
+    expect(serverAnswers[3]).toEqual(messageToUser.error.userNotAuth);
 
     client.close();
     clientSecond.close();
@@ -617,7 +617,7 @@ describe('Get user message history', () => {
     client.send(JSON.stringify(messageToUser.request.messageHistoryToUser));
     await waitSomeAnswers(serverAnswers, 1);
 
-    expect(serverAnswers[0]).toEqual(messageToUser.error.messageToNotAuth);
+    expect(serverAnswers[0]).toEqual(messageToUser.error.userNotAuth);
 
     client.close();
   });
@@ -637,7 +637,7 @@ describe('Get user message history', () => {
     client.send(JSON.stringify(messageToUser.request.messageHistoryToUser));
     await waitSomeAnswers(serverAnswers, 3);
 
-    expect(serverAnswers[2]).toEqual(messageToUser.error.messageToNotAuth);
+    expect(serverAnswers[2]).toEqual(messageToUser.error.userNotAuth);
 
     client.close();
   });
@@ -720,6 +720,248 @@ describe('Get user message history', () => {
 
     client.close();
     clientSecond.close();
+  });
+});
+
+describe('Get count message from user', () => {
+  let server;
+  beforeEach(async () => {
+    server = new Socket();
+  });
+  afterEach(async () => {
+    await server.close();
+  });
+
+  test('Get count messages (all not readed) from logged user', async () => {
+    const countMessages = 5;
+
+    const userFirst = getAuthUserRequest();
+    const userSecond = getAuthUserRequest();
+    const messageToUserFirst = getMessageRequest(userFirst, userSecond);
+    const messageToUserSecond = getMessageRequest(userSecond, userFirst);
+    const serverAnswers = [];
+
+    const client = await createClient();
+    const clientSecond = await createClient();
+    client.on('message', (message) => serverAnswers.push(JSON.parse(message)));
+    clientSecond.on('message', (message) => serverAnswers.push(JSON.parse(message)));
+
+    client.send(JSON.stringify(userFirst.request.login));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+    client.send(JSON.stringify(userFirst.request.logout));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+    clientSecond.send(JSON.stringify(userSecond.request.login));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+
+    for (let i = 0; i < countMessages; i += 1) {
+      clientSecond.send(JSON.stringify(messageToUserSecond.request.messageToUser));
+    }
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + countMessages);
+
+    client.send(JSON.stringify(userFirst.request.login));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 2);
+    client.send(JSON.stringify(messageToUserFirst.request.messageCountHistoryToUser));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+
+    expect(serverAnswers[serverAnswers.length - 1].payload.count).toEqual(countMessages);
+
+    client.close();
+    clientSecond.close();
+  });
+  test('Get count messages (part not readed) from logged user', async () => {
+    const countMessages = 10;
+    const countReadedMessages = 4;
+
+    const userFirst = getAuthUserRequest();
+    const userSecond = getAuthUserRequest();
+    const messageToUserFirst = getMessageRequest(userFirst, userSecond);
+    const messageToUserSecond = getMessageRequest(userSecond, userFirst);
+    const serverAnswers = [];
+
+    const client = await createClient();
+    const clientSecond = await createClient();
+    client.on('message', (message) => serverAnswers.push(JSON.parse(message)));
+    clientSecond.on('message', (message) => serverAnswers.push(JSON.parse(message)));
+
+    client.send(JSON.stringify(userFirst.request.login));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+    client.send(JSON.stringify(userFirst.request.logout));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+    clientSecond.send(JSON.stringify(userSecond.request.login));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+
+    for (let i = 0; i < countMessages; i += 1) {
+      clientSecond.send(JSON.stringify(messageToUserSecond.request.messageToUser));
+    }
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + countMessages);
+
+    client.send(JSON.stringify(userFirst.request.login));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 2);
+    client.send(JSON.stringify(messageToUserFirst.request.messageHistoryToUser));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+
+    const historyAnswer = serverAnswers[serverAnswers.length - 1];
+    for (let i = 0; i < countReadedMessages; i += 1) {
+      messageToUserFirst.request.messageReaded.payload.message.id = historyAnswer.payload.messages[i].id;
+      client.send(JSON.stringify(messageToUserFirst.request.messageReaded));
+    }
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1 + countReadedMessages);
+
+    client.send(JSON.stringify(messageToUserFirst.request.messageCountHistoryToUser));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+
+    expect(serverAnswers[serverAnswers.length - 1].payload.count).toEqual(countMessages - countReadedMessages);
+
+    client.close();
+    clientSecond.close();
+  });
+  test('Get count messages from not logged user', async () => {
+    const countMessages = 5;
+
+    const userFirst = getAuthUserRequest();
+    const userSecond = getAuthUserRequest();
+    const messageToUserFirst = getMessageRequest(userFirst, userSecond);
+    const messageToUserSecond = getMessageRequest(userSecond, userFirst);
+    const serverAnswers = [];
+
+    const client = await createClient();
+    const clientSecond = await createClient();
+    client.on('message', (message) => serverAnswers.push(JSON.parse(message)));
+    clientSecond.on('message', (message) => serverAnswers.push(JSON.parse(message)));
+
+    client.send(JSON.stringify(userFirst.request.login));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+    client.send(JSON.stringify(userFirst.request.logout));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+    clientSecond.send(JSON.stringify(userSecond.request.login));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+
+    for (let i = 0; i < countMessages; i += 1) {
+      clientSecond.send(JSON.stringify(messageToUserSecond.request.messageToUser));
+    }
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + countMessages);
+
+    clientSecond.send(JSON.stringify(userSecond.request.logout));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+
+    client.send(JSON.stringify(userFirst.request.login));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+    client.send(JSON.stringify(messageToUserFirst.request.messageCountHistoryToUser));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+
+    expect(serverAnswers[serverAnswers.length - 1].payload.count).toEqual(countMessages);
+
+    client.close();
+    clientSecond.close();
+  });
+  test('Not logged user get count messages from logged user', async () => {
+    const countMessages = 5;
+
+    const userFirst = getAuthUserRequest();
+    const userSecond = getAuthUserRequest();
+    const messageToUserFirst = getMessageRequest(userFirst, userSecond);
+    const messageToUserSecond = getMessageRequest(userSecond, userFirst);
+    const serverAnswers = [];
+
+    const client = await createClient();
+    const clientSecond = await createClient();
+    client.on('message', (message) => serverAnswers.push(JSON.parse(message)));
+    clientSecond.on('message', (message) => serverAnswers.push(JSON.parse(message)));
+
+    client.send(JSON.stringify(userFirst.request.login));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+    client.send(JSON.stringify(userFirst.request.logout));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+    clientSecond.send(JSON.stringify(userSecond.request.login));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+
+    for (let i = 0; i < countMessages; i += 1) {
+      clientSecond.send(JSON.stringify(messageToUserSecond.request.messageToUser));
+    }
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + countMessages);
+
+    client.send(JSON.stringify(messageToUserFirst.request.messageCountHistoryToUser));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+
+    expect(serverAnswers[serverAnswers.length - 1]).toEqual(messageToUserFirst.error.userNotAuth);
+
+    client.close();
+    clientSecond.close();
+  });
+  test('Not logged user get count messages from not logged user', async () => {
+    const countMessages = 5;
+
+    const userFirst = getAuthUserRequest();
+    const userSecond = getAuthUserRequest();
+    const messageToUserFirst = getMessageRequest(userFirst, userSecond);
+    const messageToUserSecond = getMessageRequest(userSecond, userFirst);
+    const serverAnswers = [];
+
+    const client = await createClient();
+    const clientSecond = await createClient();
+    client.on('message', (message) => serverAnswers.push(JSON.parse(message)));
+    clientSecond.on('message', (message) => serverAnswers.push(JSON.parse(message)));
+
+    client.send(JSON.stringify(userFirst.request.login));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+    client.send(JSON.stringify(userFirst.request.logout));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+    clientSecond.send(JSON.stringify(userSecond.request.login));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+
+    for (let i = 0; i < countMessages; i += 1) {
+      clientSecond.send(JSON.stringify(messageToUserSecond.request.messageToUser));
+    }
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + countMessages);
+
+    clientSecond.send(JSON.stringify(userSecond.request.logout));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+
+    client.send(JSON.stringify(messageToUserFirst.request.messageCountHistoryToUser));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+
+    expect(serverAnswers[serverAnswers.length - 1]).toEqual(messageToUserFirst.error.userNotAuth);
+
+    client.close();
+    clientSecond.close();
+  });
+  test('Get count messages from same user', async () => {
+    const userFirst = getAuthUserRequest();
+    const messageToUserFirst = getMessageRequest(userFirst, userFirst);
+    const serverAnswers = [];
+
+    const client = await createClient();
+    client.on('message', (message) => serverAnswers.push(JSON.parse(message)));
+
+    client.send(JSON.stringify(userFirst.request.login));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+
+    client.send(JSON.stringify(messageToUserFirst.request.messageCountHistoryToUser));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+
+    expect(serverAnswers[serverAnswers.length - 1]).toEqual(messageToUserFirst.error.messageToMySelf);
+
+    client.close();
+  });
+  test('Get count messages from not created user', async () => {
+    const userFirst = getAuthUserRequest();
+    const userSecond = getAuthUserRequest();
+    const messageToUserFirst = getMessageRequest(userFirst, userSecond);
+    const serverAnswers = [];
+
+    const client = await createClient();
+    client.on('message', (message) => serverAnswers.push(JSON.parse(message)));
+
+    client.send(JSON.stringify(userFirst.request.login));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+
+    messageToUserFirst.request.messageCountHistoryToUser.payload.user.login = 'fakeUser';
+    client.send(JSON.stringify(messageToUserFirst.request.messageCountHistoryToUser));
+    await waitSomeAnswers(serverAnswers, serverAnswers.length + 1);
+
+    expect(serverAnswers[serverAnswers.length - 1]).toEqual(messageToUserFirst.error.messageToNotFound);
+
+    client.close();
   });
 });
 
@@ -1122,7 +1364,7 @@ describe('Change message readed status', () => {
     await waitSomeAnswers(serverAnswers, 9);
     await waitTimeAnswers(5);
 
-    expect(serverAnswers[8]).toEqual(messageToUser.error.messageUserNotRecipient);
+    expect(serverAnswers[8]).toEqual(messageToUser.error.userNotAuth);
     expect(serverAnswers.length).toBe(9);
 
     client.close();
@@ -1155,7 +1397,7 @@ describe('Change message readed status', () => {
     await waitSomeAnswers(serverAnswers, 9);
     await waitTimeAnswers(5);
 
-    expect(serverAnswers[8]).toEqual(messageToUser.error.messageUserNotRecipient);
+    expect(serverAnswers[8]).toEqual(messageToUser.error.userNotAuth);
     expect(serverAnswers.length).toBe(9);
 
     client.close();
@@ -1438,7 +1680,7 @@ describe('Change message deleted status', () => {
     await waitSomeAnswers(serverAnswers, 8);
     await waitTimeAnswers(5);
 
-    expect(serverAnswers[7]).toEqual(messageToUser.error.messageUserNotSender);
+    expect(serverAnswers[7]).toEqual(messageToUser.error.userNotAuth);
     expect(serverAnswers.length).toBe(8);
 
     client.close();
@@ -1470,7 +1712,7 @@ describe('Change message deleted status', () => {
     await waitSomeAnswers(serverAnswers, 8);
     await waitTimeAnswers(5);
 
-    expect(serverAnswers[7]).toEqual(messageToUser.error.messageUserNotSender);
+    expect(serverAnswers[7]).toEqual(messageToUser.error.userNotAuth);
     expect(serverAnswers.length).toBe(8);
 
     client.close();
@@ -1756,7 +1998,7 @@ describe('Change message edit status', () => {
     await waitSomeAnswers(serverAnswers, 8);
     await waitTimeAnswers(5);
 
-    expect(serverAnswers[7]).toEqual(messageToUser.error.messageUserNotSender);
+    expect(serverAnswers[7]).toEqual(messageToUser.error.userNotAuth);
     expect(serverAnswers.length).toBe(8);
 
     client.close();
@@ -1788,7 +2030,7 @@ describe('Change message edit status', () => {
     await waitSomeAnswers(serverAnswers, 8);
     await waitTimeAnswers(5);
 
-    expect(serverAnswers[7]).toEqual(messageToUser.error.messageUserNotSender);
+    expect(serverAnswers[7]).toEqual(messageToUser.error.userNotAuth);
     expect(serverAnswers.length).toBe(8);
 
     client.close();

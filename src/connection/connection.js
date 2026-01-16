@@ -76,7 +76,7 @@ module.exports = class Connection {
       }
       case RequestTypes.USER_ACTIVE:
       case RequestTypes.USER_INACTIVE: {
-        const userController = new UserController();
+        const userController = new UserController(this.#user);
         answer.payload = userController.run(message);
         break;
       }
@@ -84,7 +84,8 @@ module.exports = class Connection {
       case RequestTypes.MSG_READED:
       case RequestTypes.MSG_EDIT:
       case RequestTypes.MSG_DELETE:
-      case RequestTypes.MSG_FROM_USER: {
+      case RequestTypes.MSG_FROM_USER:
+      case RequestTypes.MSG_COUNT_NOT_READED_FROM_USER: {
         const messageController = new MessageController(this.#user);
         answer.payload = messageController.run(message);
         break;
@@ -154,6 +155,10 @@ module.exports = class Connection {
     }
 
     this.#sendMessage(answer);
+  }
+  close() {
+    this.#socket.close();
+    this.#closeHandler();
   }
   #clientMessageHandler(data) {
     let message;

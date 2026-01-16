@@ -25,6 +25,15 @@ function getMessageRequest(userFirst, userSecond) {
           },
         },
       },
+      messageCountHistoryToUser: {
+        id: `${requestIndex}`,
+        type: RequestTypes.MSG_COUNT_NOT_READED_FROM_USER,
+        payload: {
+          user: {
+            login: userSecond.request.login.payload.user.login,
+          },
+        },
+      },
       messageReaded: {
         id: `${requestIndex}`,
         type: RequestTypes.MSG_READED,
@@ -121,6 +130,13 @@ function getMessageRequest(userFirst, userSecond) {
           messages: [],
         },
       },
+      messageCountHistoryToUser: {
+        id: `${requestIndex}`,
+        type: RequestTypes.MSG_COUNT_FROM_USER,
+        payload: {
+          messages: 0,
+        },
+      },
       messageDelivered: {
         id: null,
         type: RequestTypes.MSG_DELIVERED,
@@ -215,6 +231,13 @@ function getMessageRequest(userFirst, userSecond) {
       },
     },
     error: {
+      userNotAuth: {
+        id: `${requestIndex}`,
+        type: RequestTypes.ERROR,
+        payload: {
+          error: 'the user was not authorized cannot be executed',
+        },
+      },
       messageToMySelf: {
         id: `${requestIndex}`,
         type: RequestTypes.ERROR,

@@ -1,13 +1,12 @@
 const MessagePool = require('../../../pool/message-pool');
 const DefaultHandler = require('../../default-handler');
-const ConnectionPool = require('../../../pool/connection-pool');
 const UserPool = require('../../../pool/user-pool');
 const { HANDLER_RECEIVER_INVALID, HANDLER_RECEIVER_NOT_FOUND } = require('./handler-messages');
 const { PAYLOAD_INVALID, TYPE_INVALID } = require('../../default-messages');
 const { RequestTypes } = require('../../../connection/request-types');
 
 module.exports = class MessageFromUserHandler extends DefaultHandler {
-  type = RequestTypes.MSG_FROM_USER;
+  type = RequestTypes.MSG_COUNT_NOT_READED_FROM_USER;
   /**
    * @param {string} currentUserLogin
    */
@@ -45,52 +44,17 @@ module.exports = class MessageFromUserHandler extends DefaultHandler {
     }
 
     const result = {
-      messages: [],
+      count: 0,
     };
 
     const messagePool = MessagePool.getInstance();
-    const messagesCurrentFrom = messagePool.getMessageByUserFromTo(this.currentUserLogin, message.payload.user.login);
     const messagesCurrentTo = messagePool.getMessageByUserFromTo(message.payload.user.login, this.currentUserLogin);
-    messagesCurrentTo.forEach((msg) => {
-      if (!msg.status.isDelivered) {
-        // eslint-disable-next-line no-param-reassign
-        msg.isDelivered = true;
-        this.#sendDeliveredNotify(msg);
+    for (let i = 0; i < messagesCurrentTo.length; i += 1) {
+      if (!messagesCurrentTo[i].isReaded) {
+        result.count += 1;
       }
-    });
-    result.messages = [
-      ...messagesCurrentFrom.map((msg) => msg.getPayload()),
-      ...messagesCurrentTo.map((msg) => msg.getPayload()),
-    ].sort((msgA, msgB) => msgA.datetime - msgB.datetime);
+    }
 
     return result;
-  }
-  /**
-   * @param {Message} message
-   */
-  #sendDeliveredNotify(message) {
-    const connectionsPool = ConnectionPool.getInstance();
-    const userConnection = connectionsPool.getConnectionByLogin(message.from);
-    if (!userConnection) {
-      return false;
-    }
-    const userFrom = userConnection.getUser();
-    if (userFrom.isLogined) {
-      const messageFrom = {
-        id: null,
-        type: RequestTypes.MSG_DELIVERED,
-        payload: {
-          message: {
-            id: message.id,
-            status: {
-              isDelivered: message.status.isDelivered,
-            },
-          },
-        },
-      };
-      userConnection.innerMessageHandler(messageFrom);
-      return true;
-    }
-    return false;
   }
 };
