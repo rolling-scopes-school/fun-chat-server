@@ -25,7 +25,7 @@ If it is not possible to run the server using port `4000`, you can use another p
 
 The server event log facilitates real-time tracking of incoming requests received by the server and responses sent by the server.
 
-In the created `.env` file, set the `LOG`  parameter to one of the values listed in this section.
+In the created `.env` file, set the `LOG` parameter to one of the values listed in this section.
 
 <details>
 <summary markdown="span">Server Log Display Options</summary>
@@ -37,6 +37,12 @@ In the created `.env` file, set the `LOG`  parameter to one of the values listed
 - `NONE` - request logging disabled
 
 </details>
+
+### Setting the Data Clearing Period
+
+In the created `.env` file, set the `CLEAR_INTERVAL` parameter to the number of seconds after which the message history will be cleared and all users will be deleted.
+
+This parameter is optional. You may need it if you want to host the application on your own server in public access.
 
 ### General Information
 
